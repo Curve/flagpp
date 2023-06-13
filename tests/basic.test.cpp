@@ -9,7 +9,7 @@ enum class my_enum
 };
 
 template <>
-static constexpr bool flags::enabled<my_enum> = true;
+constexpr bool flags::enabled<my_enum> = true;
 
 TEST_CASE("Basic bit-wise operations are tested", "[Basic]")
 {
@@ -47,9 +47,9 @@ enum class my_enum_2
 };
 
 template <>
-static constexpr bool flags::enabled<my_enum_2> = true;
+constexpr bool flags::enabled<my_enum_2> = true;
 template <>
-static constexpr bool flags::no_underlying<my_enum_2> = true;
+constexpr bool flags::no_underlying<my_enum_2> = true;
 
 TEST_CASE("Basic bit-wise operations are tested [no_underlying]", "[Basic-No-Underlying]")
 {
