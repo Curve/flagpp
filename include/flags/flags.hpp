@@ -1,4 +1,5 @@
 #pragma once
+#include <ostream>
 #include <concepts>
 #include <type_traits>
 
@@ -8,6 +9,12 @@ namespace flags
     concept scoped_enum = requires() {
         requires std::is_enum_v<T>;
         requires not std::is_convertible_v<T, std::underlying_type_t<T>>;
+    };
+
+    template <typename T>
+    concept stream = requires(T &value) {
+        []<typename Char, typename Traits>(std::basic_ios<Char, Traits> &) {
+        }(value);
     };
 
     template <class T>
@@ -84,7 +91,7 @@ constexpr auto operator^(L left, R right)
 }
 
 template <typename L, typename R>
-    requires flags::allowed<L> or flags::allowed<R>
+    requires(not flags::stream<L>) and (flags::allowed<L> or flags::allowed<R>)
 constexpr auto operator<<(L left, R right)
 {
     using enum_t = std::conditional_t<flags::allowed<L>, L, R>;
