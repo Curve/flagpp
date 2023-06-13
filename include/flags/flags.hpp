@@ -1,5 +1,5 @@
 #pragma once
-#include <ostream>
+#include <ios>
 #include <concepts>
 #include <type_traits>
 
