@@ -1,19 +1,24 @@
 #pragma once
-#include <ios>
 #include <concepts>
-#include <type_traits>
 
 namespace flags
 {
+    template <typename From, typename To>
+    concept castable_to = requires(From from) { static_cast<To>(from); };
+
     template <class T>
     concept scoped_enum = requires() {
         requires std::is_enum_v<T>;
-        requires not std::is_convertible_v<T, std::underlying_type_t<T>>;
+        requires not std::convertible_to<T, std::underlying_type_t<T>>;
     };
 
-    template <typename T>
-    concept stream = requires(T &value) {
-        []<typename Char, typename Traits>(std::basic_ios<Char, Traits> &) {
+    template <class T>
+        requires scoped_enum<T>
+    class enum_wrapper;
+
+    template <class T>
+    concept is_enum_wrapper = requires(T value) {
+        []<typename O>(enum_wrapper<O> &) {
         }(value);
     };
 
@@ -23,109 +28,104 @@ namespace flags
 
     template <class T>
         requires enabled<T>
-    static constexpr bool no_underlying = false;
+    static constexpr bool strict = false;
 
-    template <class T>
-    concept allowed = requires() {
-        requires enabled<T>;
-        requires scoped_enum<T>;
-        requires std::integral<std::underlying_type_t<T>>;
-    };
-
-    template <typename T>
-    constexpr auto underlying(T value)
+    template <typename L, typename R>
+    consteval auto is_allowed()
     {
-        if constexpr (scoped_enum<T>)
+        constexpr auto enabled_l = requires { requires enabled<L>; };
+        constexpr auto enabled_r = requires { requires enabled<R>; };
+
+        if constexpr (not(enabled_l or std::integral<L>))
         {
-            return static_cast<std::underlying_type_t<T>>(value);
+            return false;
         }
-        else
+
+        if constexpr (not(enabled_r or std::integral<R> or is_enum_wrapper<R>))
         {
-            return value;
+            return false;
         }
+
+        constexpr auto strict_l = requires { requires strict<L>; };
+        constexpr auto strict_r = requires { requires strict<R>; };
+
+        if constexpr (strict_l or strict_r)
+        {
+            constexpr auto is_wrapper_of = requires { requires std::same_as<enum_wrapper<L>, R>; };
+            return std::same_as<L, R> or is_wrapper_of;
+        }
+
+        return true;
     }
 
-    template <typename Enum, typename T>
-    constexpr auto cast(T value)
-    {
-        if constexpr (no_underlying<Enum>)
-        {
-            return static_cast<Enum>(value);
-        }
-        else
-        {
-            return value;
-        }
-    }
+    template <typename L, typename R>
+    concept allowed = requires() { requires is_allowed<L, R>(); };
 } // namespace flags
 
-template <typename T>
-    requires flags::allowed<T>
-constexpr auto operator~(T value)
-{
-    return flags::cast<T>(~flags::underlying(value));
-}
-
 template <typename L, typename R>
-    requires flags::allowed<L> or flags::allowed<R>
+    requires flags::allowed<L, R>
 constexpr auto operator&(L left, R right)
 {
-    using enum_t = std::conditional_t<flags::allowed<L>, L, R>;
-    return flags::cast<enum_t>(flags::underlying(left) & flags::underlying(right));
+    return flags::enum_wrapper{left} & flags::enum_wrapper{right};
 }
 
 template <typename L, typename R>
-    requires flags::allowed<L> or flags::allowed<R>
+    requires flags::allowed<L, R>
 constexpr auto operator|(L left, R right)
 {
-    using enum_t = std::conditional_t<flags::allowed<L>, L, R>;
-    return flags::cast<enum_t>(flags::underlying(left) | flags::underlying(right));
+    return flags::enum_wrapper{left} | flags::enum_wrapper{right};
 }
 
 template <typename L, typename R>
-    requires flags::allowed<L> or flags::allowed<R>
+    requires flags::allowed<L, R>
 constexpr auto operator^(L left, R right)
 {
-    using enum_t = std::conditional_t<flags::allowed<L>, L, R>;
-    return flags::cast<enum_t>(flags::underlying(left) ^ flags::underlying(right));
+    return flags::enum_wrapper{left} ^ flags::enum_wrapper{right};
 }
 
 template <typename L, typename R>
-    requires(not flags::stream<L>) and (flags::allowed<L> or flags::allowed<R>)
+    requires flags::allowed<L, R>
 constexpr auto operator<<(L left, R right)
 {
-    using enum_t = std::conditional_t<flags::allowed<L>, L, R>;
-    return flags::cast<enum_t>(flags::underlying(left) << flags::underlying(right));
+    return flags::enum_wrapper{left} << flags::enum_wrapper{right};
 }
 
 template <typename L, typename R>
-    requires flags::allowed<L> or flags::allowed<R>
+    requires flags::allowed<L, R>
 constexpr auto operator>>(L left, R right)
 {
-    using enum_t = std::conditional_t<flags::allowed<L>, L, R>;
-    return flags::cast<enum_t>(flags::underlying(left) >> flags::underlying(right));
+    return flags::enum_wrapper{left} >> flags::enum_wrapper{right};
+}
+
+template <class Enum>
+    requires flags::enabled<Enum>
+constexpr auto operator~(Enum value)
+{
+    return ~flags::enum_wrapper{value};
 }
 
 template <typename L, typename R>
-    requires flags::allowed<L> or flags::allowed<R>
+    requires flags::allowed<L, R>
 constexpr auto &operator&=(L &left, R right)
 {
-    using enum_t = std::conditional_t<flags::allowed<L>, L, R>;
-    return left = flags::cast<enum_t>(left & right);
+    left = flags::enum_wrapper{left} & flags::enum_wrapper{right};
+    return left;
 }
 
 template <typename L, typename R>
-    requires flags::allowed<L> or flags::allowed<R>
+    requires flags::allowed<L, R>
 constexpr auto &operator|=(L &left, R right)
 {
-    using enum_t = std::conditional_t<flags::allowed<L>, L, R>;
-    return left = flags::cast<enum_t>(left | right);
+    left = flags::enum_wrapper{left} | flags::enum_wrapper{right};
+    return left;
 }
 
 template <typename L, typename R>
-    requires flags::allowed<L> or flags::allowed<R>
+    requires flags::allowed<L, R>
 constexpr auto &operator^=(L &left, R right)
 {
-    using enum_t = std::conditional_t<flags::allowed<L>, L, R>;
-    return left = flags::cast<enum_t>(left ^ right);
+    left = flags::enum_wrapper{left} ^ flags::enum_wrapper{right};
+    return left;
 }
+
+#include "flags.inl"
