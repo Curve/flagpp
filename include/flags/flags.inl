@@ -3,6 +3,9 @@
 
 namespace flags
 {
+    template <typename From, typename To>
+    concept castable_to = requires(From from) { static_cast<To>(from); };
+
     template <typename T>
     concept strict_wrapper = requires(T value) {
         []<typename O>(enum_wrapper<O> &)

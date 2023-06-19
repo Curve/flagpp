@@ -3,9 +3,6 @@
 
 namespace flags
 {
-    template <typename From, typename To>
-    concept castable_to = requires(From from) { static_cast<To>(from); };
-
     template <class T>
     concept scoped_enum = requires() {
         requires std::is_enum_v<T>;
