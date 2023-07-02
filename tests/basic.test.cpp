@@ -45,7 +45,7 @@ TEST_CASE("Basic bit-wise operations are tested [plain]", "[plain]")
     REQUIRE(not(flag & my_enum::b));
     REQUIRE(not(flag & my_enum::c));
 
-    flag &= ~my_enum::a;
+    flag = flag & ~my_enum::a;
 
     REQUIRE(not(flag & my_enum::a));
     REQUIRE(not(flag & my_enum::b));
@@ -86,7 +86,7 @@ TEST_CASE("Basic bit-wise operations are tested [wrapped]", "[wrapped]")
     REQUIRE(not(flag & my_enum::b));
     REQUIRE(not(flag & my_enum::c));
 
-    flag &= ~my_enum::a;
+    flag = flag & ~my_enum::a;
 
     REQUIRE(not(flag & my_enum::a));
     REQUIRE(not(flag & my_enum::b));
