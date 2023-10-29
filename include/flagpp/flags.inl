@@ -42,12 +42,6 @@ namespace flagpp
         }
 
       public:
-        constexpr wrapper operator==(wrapper other) const
-        {
-            return underlying() == other.underlying();
-        }
-
-      public:
         constexpr wrapper operator&(wrapper other) const
         {
             return underlying() & other.underlying();

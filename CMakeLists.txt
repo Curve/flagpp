@@ -1,11 +1,11 @@
 cmake_minimum_required(VERSION 3.21)
-project(flagpp LANGUAGES CXX VERSION 2.0)
+project(flagpp LANGUAGES CXX VERSION 2.1)
 
 # --------------------------------------------------------------------------------------------------------
 # Library options
 # --------------------------------------------------------------------------------------------------------
 
-option(flagpp_tests "Whether or not tests should be enabled" ON)
+option(flagpp_tests "Whether or not tests should be enabled" OFF)
 
 # --------------------------------------------------------------------------------------------------------
 # Create library
