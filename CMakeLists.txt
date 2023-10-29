@@ -1,5 +1,5 @@
-cmake_minimum_required(VERSION 3.16)
-project(flags LANGUAGES CXX VERSION 1.0)
+cmake_minimum_required(VERSION 3.21)
+project(flags LANGUAGES CXX VERSION 2.0)
 
 # --------------------------------------------------------------------------------------------------------
 # Library options
@@ -27,16 +27,14 @@ target_include_directories(${PROJECT_NAME} INTERFACE "include")
 # Tests
 # --------------------------------------------------------------------------------------------------------
 
-include("cmake/cpm.cmake")
-
 if (flags_tests)
-    CPMAddPackage("gh:catchorg/Catch2@3.3.2")
-
-    file(GLOB src "tests/*.test.cpp")
-    add_executable(${PROJECT_NAME}_tests ${src})
-
-    target_compile_features(${PROJECT_NAME}_tests INTERFACE cxx_std_20)
-    set_target_properties(${PROJECT_NAME}_tests PROPERTIES CXX_STANDARD 20 CXX_EXTENSIONS OFF CXX_STANDARD_REQUIRED ON)
-
-    target_link_libraries(${PROJECT_NAME}_tests PUBLIC Catch2WithMain ${PROJECT_NAME})
+    message(STATUS "[flags] Building tests")
+    add_subdirectory(tests)
 endif()
+
+# --------------------------------------------------------------------------------------------------------
+# Install Targets
+# --------------------------------------------------------------------------------------------------------
+
+install(DIRECTORY "include/" TYPE INCLUDE)
+install(TARGETS ${PROJECT_NAME} INCLUDES DESTINATION include)
