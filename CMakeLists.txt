@@ -1,11 +1,11 @@
 cmake_minimum_required(VERSION 3.21)
-project(flags LANGUAGES CXX VERSION 2.0)
+project(flagpp LANGUAGES CXX VERSION 2.0)
 
 # --------------------------------------------------------------------------------------------------------
 # Library options
 # --------------------------------------------------------------------------------------------------------
 
-option(flags_tests "Whether or not tests should be enabled" OFF)
+option(flagpp_tests "Whether or not tests should be enabled" ON)
 
 # --------------------------------------------------------------------------------------------------------
 # Create library
@@ -27,8 +27,8 @@ target_include_directories(${PROJECT_NAME} INTERFACE "include")
 # Tests
 # --------------------------------------------------------------------------------------------------------
 
-if (flags_tests)
-    message(STATUS "[flags] Building tests")
+if (flagpp_tests)
+    message(STATUS "[flagpp] Building tests")
     add_subdirectory(tests)
 endif()
 

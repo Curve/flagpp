@@ -24,11 +24,11 @@ jobs:
       - name: Compile
         run: >
           mkdir build && cd build
-          && cmake .. -Dflags_tests=ON 
+          && cmake .. -Dflagpp_tests=ON 
           && cmake --build . --config Debug
 
       - name: Run Tests
-        run: "./build/tests/flags-tests"
+        run: "./build/tests/flagpp-tests"
 
   test-windows-clang:
     runs-on: windows-latest
@@ -44,11 +44,11 @@ jobs:
       - name: Compile
         run: >
           mkdir build && cd build
-          && cmake .. -Dflags_tests=ON -T ClangCL -A x64 
+          && cmake .. -Dflagpp_tests=ON -T ClangCL -A x64 
           && cmake --build . --config Debug
 
       - name: Run Tests
-        run: "./build/tests/Debug/flags-tests.exe"
+        run: "./build/tests/Debug/flagpp-tests.exe"
 
   test-windows:
     runs-on: windows-latest
@@ -64,8 +64,8 @@ jobs:
       - name: Compile
         run: >
           mkdir build && cd build
-          && cmake .. -Dflags_tests=ON 
+          && cmake .. -Dflagpp_tests=ON 
           && cmake --build . --config Debug
 
       - name: Run Tests
-        run: "./build/tests/Debug/flags-tests.exe"
+        run: "./build/tests/Debug/flagpp-tests.exe"

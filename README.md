@@ -45,7 +45,7 @@ enum class my_enum
 };
 
 template <>
-constexpr bool flags::enabled<my_enum> = true;
+constexpr bool flagpp::enabled<my_enum> = true;
 
 // You can now use `my_enum` for bit-wise operations!
 

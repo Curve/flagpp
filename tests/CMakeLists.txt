@@ -1,12 +1,12 @@
 cmake_minimum_required(VERSION 3.16)
-project(flags-tests LANGUAGES CXX)
+project(flagpp-tests LANGUAGES CXX)
 
 # --------------------------------------------------------------------------------------------------------
 # Create executable
 # --------------------------------------------------------------------------------------------------------
 
 add_executable(${PROJECT_NAME})
-add_executable(flags::tests ALIAS ${PROJECT_NAME})
+add_executable(flagpp::tests ALIAS ${PROJECT_NAME})
 
 target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_20)
 set_target_properties(${PROJECT_NAME} PROPERTIES CXX_STANDARD 20 CXX_EXTENSIONS OFF CXX_STANDARD_REQUIRED ON)
@@ -31,4 +31,4 @@ CPMFindPackage(
   OPTIONS        "BOOST_UT_DISABLE_MODULE ON"
 )
 
-target_link_libraries(${PROJECT_NAME} PRIVATE Boost::ut cr::flags)
+target_link_libraries(${PROJECT_NAME} PRIVATE Boost::ut cr::flagpp)
