@@ -1,47 +1,40 @@
-<div align="center">
+<div align="center"> 
+    <img src="assets/logo.svg" height=312>
+</div>
 
-# 🏴‍☠️ flags
+<br/>
 
-A C++20 library that provides (opt-in) bit-wise operations for arbitrary `enum class`es
+<p align="center">
+  A C++20 library that provides (opt-in) bit-wise operations for arbitrary `enum class`es
+</p>
 
 </div>
 
-# ⚙️ Configuration
+## 📦 Installation
 
-## Tests
+* Using [CPM](https://github.com/cpm-cmake/CPM.cmake)
+  ```cmake
+  CPMFindPackage(
+    NAME           flagpp
+    VERSION        2.0
+    GIT_REPOSITORY "https://github.com/Curve/flagpp"
+  )
+  ```
 
-```cmake
-set(flags_tests OFF)
-```
-> If set to `ON`, *flags* will build tests.
+* Using FetchContent
+  ```cmake
+  include(FetchContent)
 
-# 📦 Installation
+  FetchContent_Declare(flagpp GIT_REPOSITORY "https://github.com/Curve/flagpp" GIT_TAG v2.0)
+  FetchContent_MakeAvailable(flagpp)
 
-> **Note**  
-> This library requires a C++20 capable compiler.)
+  target_link_libraries(<target> flagpp)
+  ```
 
-- FetchContent
-    ```cmake
-    include(FetchContent)
-    FetchContent_Declare(flags GIT_REPOSITORY "https://github.com/Curve/flags")
-
-    FetchContent_MakeAvailable(flags)
-    target_link_libraries(<YourLibrary> cr::flags)
-    ```
-- Git Submodule
-    ```bash
-    git submodule add "https://github.com/Curve/flags"
-    ```
-    ```cmake
-    # Somewhere in your CMakeLists.txt
-    add_subdirectory("<path_to_flags>")
-    target_link_libraries(<YourLibrary> cr::flags)
-    ```
-
-# 📒 Examples
+## 📃 Usage
 
 ```cpp
-#include <flags/flags.hpp>
+#include <flagpp/flags.hpp>
 
 enum class my_enum
 {
