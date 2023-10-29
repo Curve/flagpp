@@ -28,7 +28,7 @@ jobs:
           && cmake --build . --config Debug
 
       - name: Run Tests
-        run: "./build/flags_tests"
+        run: "./build/tests/flags-tests"
 
   test-windows-clang:
     runs-on: windows-latest
@@ -48,7 +48,7 @@ jobs:
           && cmake --build . --config Debug
 
       - name: Run Tests
-        run: "./build/Debug/flags_tests.exe"
+        run: "./build/tests/Debug/flags-tests.exe"
 
   test-windows:
     runs-on: windows-latest
@@ -68,4 +68,4 @@ jobs:
           && cmake --build . --config Debug
 
       - name: Run Tests
-        run: "./build/Debug/flags_tests.exe"
+        run: "./build/tests/Debug/flags-tests.exe"
