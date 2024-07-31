@@ -2,21 +2,24 @@
     <img src="assets/logo.svg" height=312>
 </div>
 
-<br/>
+<div align="center">
 
-<p align="center">
-  A C++20 library that provides (opt-in) bit-wise operations for arbitrary `enum class`es
-</p>
+A C++23 library that provides (opt-in) bit-wise operations for arbitrary `enum class`es
+
+</div>
 
 </div>
 
 ## 📦 Installation
 
+> [!NOTE]
+> See versions `< 3.0` for C++20 support!
+
 * Using [CPM](https://github.com/cpm-cmake/CPM.cmake)
   ```cmake
   CPMFindPackage(
     NAME           flagpp
-    VERSION        2.0
+    VERSION        3.0
     GIT_REPOSITORY "https://github.com/Curve/flagpp"
   )
   ```
@@ -25,7 +28,7 @@
   ```cmake
   include(FetchContent)
 
-  FetchContent_Declare(flagpp GIT_REPOSITORY "https://github.com/Curve/flagpp" GIT_TAG v2.0)
+  FetchContent_Declare(flagpp GIT_REPOSITORY "https://github.com/Curve/flagpp" GIT_TAG v3.0)
   FetchContent_MakeAvailable(flagpp)
 
   target_link_libraries(<target> flagpp)
