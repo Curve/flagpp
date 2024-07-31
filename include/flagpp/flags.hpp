@@ -1,110 +1,102 @@
 #pragma once
+
 #include <concepts>
 #include <type_traits>
 
 namespace flagpp
 {
-    template <typename T>
-    concept scoped_enum = requires() {
-        requires std::is_enum_v<T>;
-        requires not std::convertible_to<T, std::underlying_type_t<T>>;
-    };
-
-    template <typename T>
-        requires scoped_enum<T>
-    static constexpr bool enabled = false;
-
-    template <typename T>
-        requires scoped_enum<T>
-    class wrapper;
-
-    template <typename T>
-    concept wrapped = requires(T &value) {
-        []<typename O>(wrapper<O> &) {
-        }(value);
-    };
-
-    template <typename Enum, typename O>
-    consteval auto is_allowed()
+    namespace impl
     {
-        if constexpr (wrapped<O>)
-        {
-            return std::same_as<Enum, typename O::enum_t>;
-        }
-        else
-        {
-            return std::same_as<Enum, O>;
-        }
-    }
+        template <typename T>
+            requires std::is_scoped_enum_v<T>
+        struct wrapper;
 
-    template <typename Enum, typename O>
-    concept allowed = requires() { requires is_allowed<Enum, O>(); };
+        template <typename Enum, typename T>
+        struct allowed_impl : std::false_type
+        {
+        };
+
+        template <typename Enum>
+        struct allowed_impl<Enum, Enum> : std::true_type
+        {
+        };
+
+        template <typename Enum, typename T>
+            requires std::same_as<Enum, typename T::enum_type>
+        struct allowed_impl<Enum, T> : std::true_type
+        {
+        };
+
+        template <typename Enum, typename O>
+        concept allowed = requires() { requires allowed_impl<Enum, O>::value; };
+    } // namespace impl
+
+    template <typename T>
+        requires std::is_scoped_enum_v<T>
+    static constexpr bool enabled = false;
 } // namespace flagpp
 
 template <typename Enum, typename Other>
-    requires flagpp::enabled<Enum> and flagpp::allowed<Enum, Other>
+    requires flagpp::enabled<Enum> and flagpp::impl::allowed<Enum, Other>
 constexpr auto operator&(Enum left, Other right)
 {
-    return flagpp::wrapper{left} & right;
+    return flagpp::impl::wrapper{left} & right;
 }
 
 template <typename Enum, typename Other>
-    requires flagpp::enabled<Enum> and flagpp::allowed<Enum, Other>
+    requires flagpp::enabled<Enum> and flagpp::impl::allowed<Enum, Other>
 constexpr auto operator|(Enum left, Other right)
 {
-    return flagpp::wrapper{left} | right;
+    return flagpp::impl::wrapper{left} | right;
 }
 
 template <typename Enum, typename Other>
-    requires flagpp::enabled<Enum> and flagpp::allowed<Enum, Other>
+    requires flagpp::enabled<Enum> and flagpp::impl::allowed<Enum, Other>
 constexpr auto operator^(Enum left, Other right)
 {
-    return flagpp::wrapper{left} ^ right;
+    return flagpp::impl::wrapper{left} ^ right;
 }
 
 template <typename Enum, typename Other>
-    requires flagpp::enabled<Enum> and flagpp::allowed<Enum, Other>
+    requires flagpp::enabled<Enum> and flagpp::impl::allowed<Enum, Other>
 constexpr auto operator<<(Enum left, Other right)
 {
-    return flagpp::wrapper{left} << right;
+    return flagpp::impl::wrapper{left} << right;
 }
 
 template <typename Enum, typename Other>
-    requires flagpp::enabled<Enum> and flagpp::allowed<Enum, Other>
+    requires flagpp::enabled<Enum> and flagpp::impl::allowed<Enum, Other>
 constexpr auto operator>>(Enum left, Other right)
 {
-    return flagpp::wrapper{left} >> right;
+    return flagpp::impl::wrapper{left} >> right;
 }
 
 template <typename Enum, typename Other>
-    requires flagpp::enabled<Enum> and flagpp::allowed<Enum, Other>
+    requires flagpp::enabled<Enum> and flagpp::impl::allowed<Enum, Other>
 constexpr auto &operator&=(Enum &left, Other right)
 {
-    left = flagpp::wrapper{left} & right;
-    return left;
+    return left = flagpp::impl::wrapper{left} & right;
 }
 
 template <typename Enum, typename Other>
-    requires flagpp::enabled<Enum> and flagpp::allowed<Enum, Other>
+    requires flagpp::enabled<Enum> and flagpp::impl::allowed<Enum, Other>
 constexpr auto &operator|=(Enum &left, Other right)
 {
-    left = flagpp::wrapper{left} | right;
-    return left;
+    return left = flagpp::impl::wrapper{left} | right;
 }
 
 template <typename Enum, typename Other>
-    requires flagpp::enabled<Enum> and flagpp::allowed<Enum, Other>
+    requires flagpp::enabled<Enum> and flagpp::impl::allowed<Enum, Other>
 constexpr auto &operator^=(Enum &left, Other right)
 {
-    left = flagpp::wrapper{left} ^ right;
-    return left;
+    return left = flagpp::impl::wrapper{left} ^ right;
 }
 
 template <typename Enum>
     requires flagpp::enabled<Enum>
 constexpr auto operator~(Enum value)
 {
-    return ~flagpp::wrapper{value};
+    return ~flagpp::impl::wrapper{value};
 }
 
 #include "flags.inl"

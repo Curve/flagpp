@@ -1,23 +1,25 @@
 #pragma once
-#include "flags.hpp"
 
-namespace flagpp
+#include "flags.hpp"
+#include <utility>
+
+namespace flagpp::impl
 {
     template <typename T>
-        requires scoped_enum<T>
-    class wrapper
+        requires std::is_scoped_enum_v<T>
+    struct wrapper
     {
-        T m_value;
+        using enum_type       = T;
+        using underlying_type = std::underlying_type_t<T>;
 
-      public:
-        using enum_t       = T;
-        using underlying_t = std::underlying_type_t<T>;
+      private:
+        T m_value;
 
       public:
         constexpr wrapper(T value) : m_value(value) {}
 
       private:
-        constexpr wrapper(underlying_t value) : m_value(static_cast<T>(value)) {}
+        constexpr wrapper(underlying_type value) : m_value(static_cast<enum_type>(value)) {}
 
       public:
         constexpr T value() const
@@ -31,12 +33,12 @@ namespace flagpp
         }
 
       public:
-        constexpr underlying_t underlying() const
+        constexpr auto underlying() const
         {
-            return static_cast<underlying_t>(m_value);
+            return std::to_underlying(m_value);
         }
 
-        constexpr operator underlying_t() const
+        constexpr operator underlying_type() const
         {
             return underlying();
         }
@@ -92,4 +94,4 @@ namespace flagpp
             return *this;
         }
     };
-} // namespace flagpp
+} // namespace flagpp::impl
