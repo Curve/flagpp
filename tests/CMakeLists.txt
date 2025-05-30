@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.16)
+cmake_minimum_required(VERSION 3.25)
 project(flagpp-tests LANGUAGES CXX)
 
 # --------------------------------------------------------------------------------------------------------
@@ -26,7 +26,7 @@ include("../cmake/cpm.cmake")
 
 CPMFindPackage(
   NAME           ut
-  VERSION        2.0.0
+  VERSION        2.3.1
   GIT_REPOSITORY "https://github.com/boost-ext/ut"
   OPTIONS        "BOOST_UT_DISABLE_MODULE ON"
 )
